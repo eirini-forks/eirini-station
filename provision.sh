@@ -35,6 +35,7 @@ main() {
   install_k14s_tools
   mkdir_home_user_bin
   install_ibmcloud_cli
+  switch_to_helm2
   setup_helm_client
   install_gotools
   install_ohmyzsh
@@ -87,6 +88,10 @@ install_ibmcloud_cli() {
     curl -sL https://ibm.biz/idt-installer | bash
     ibmcloud plugin install kubernetes-service -f
   fi
+}
+
+switch_to_helm2() {
+  brew link --overwrite helm@2 --force
 }
 
 setup_helm_client() {
