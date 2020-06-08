@@ -4,11 +4,6 @@ set -euo pipefail
 readonly USAGE="Usage: provision.sh [-l | -c <command_name>]"
 
 main() {
-  if [[ $EUID -ne 0 ]]; then
-    echo "Script must be run as root."
-    exit 1
-  fi
-
   while getopts ":lch" opt; do
     case ${opt} in
       l)
@@ -35,157 +30,33 @@ main() {
   done
   shift $((OPTIND - 1))
   echo ">>> Installing everything..."
-  disable_ipv6
-  setup_locale
-  install_packages
-  install_snaps
-  install_nodejs
-  install_nvim
+  install_brew_deps
   install_npm_packages
-  install_gcloud_cli
-  install_golang
-  install_cf_cli
-  install_misc_tools
   install_k14s_tools
+  mkdir_home_user_bin
+  install_ibmcloud_cli
+  setup_helm_client
+  install_gotools
+  install_ohmyzsh
+  install_vim_plug
+  install_nvim_extensions
+  install_rbenv
+  install_cred_alert
+  clone_git_repos
+  configure_dotfiles
+  install_vim_plugins
+  install_misc_tools
+  install_pure_zsh_theme
+  install_tmux_plugin_manager
+  install_zsh_autosuggestions
+  compile_authorized_keys
+  init_pass_store
+  switch_to_zsh
 }
 
-disable_ipv6() {
-  echo ">>> Disabling IPv6"
-  sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
-  sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
-}
-
-setup_locale() {
-  echo ">>> Setting up the en_US locale"
-  apt-get -y install locales
-  locale-gen en_US.UTF-8
-  update-locale LANG=en_US.UTF-8
-}
-
-install_packages() {
-  echo ">>> Installing the APT packages"
-  apt-get update
-  apt-get -y install \
-    apt-transport-https \
-    autoconf \
-    automake \
-    build-essential \
-    ca-certificates \
-    cmake \
-    ctags \
-    curl \
-    direnv \
-    g++ \
-    git \
-    gnupg-agent \
-    iputils-ping \
-    jq \
-    lastpass-cli \
-    libevent-dev \
-    libncurses5-dev \
-    libreadline-dev \
-    libtool \
-    libtool-bin \
-    libssl-dev \
-    net-tools \
-    netcat-openbsd \
-    ntp \
-    openssh-server \
-    pass \
-    pkg-config \
-    python3 \
-    python3-dev \
-    python3-pip \
-    python3-venv \
-    ripgrep \
-    ruby-dev \
-    rubygems \
-    shellcheck \
-    socat \
-    software-properties-common \
-    stow \
-    tmux \
-    trash-cli \
-    unzip \
-    wget \
-    xsel \
-    zsh
-}
-
-install_snaps() {
-  echo ">>> Installing the Snap packages"
-  snap install shfmt
-}
-
-install_golang() {
-  echo ">>> Installing Golang"
-  mkdir -p /usr/local/go
-  curl -sL "https://dl.google.com/go/go1.14.linux-amd64.tar.gz" | tar xz -C "/usr/local"
-}
-
-install_nodejs() {
-  echo ">>> Installing NodeJS"
-  curl -sL https://deb.nodesource.com/setup_13.x | bash -
-  apt-get -y install nodejs
-}
-
-install_nvim() {
-  echo ">>> Installing NeoVim"
-  add-apt-repository -y ppa:neovim-ppa/unstable
-  apt-get update
-  apt-get -y install neovim
-}
-
-install_gcloud_cli() {
-  echo ">>> Installing the Google Cloud CLI"
-  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
-  curl -sL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-  apt-get update
-  apt-get -y install google-cloud-sdk
-}
-
-install_cf_cli() {
-  echo ">>> Installing the Cloud Foundry CLI"
-  wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
-  echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
-  apt-get update
-  apt-get -y install cf-cli=6.49.0
-  sudo tee /etc/apt/preferences.d/cf-cli >/dev/null <<EOF
-Package: cf-cli
-Pin: version 6.49*
-Pin-Priority: 1000
-EOF
-}
-
-install_misc_tools() {
-  echo ">>> Installing ngrok"
-  curl -sL "https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz" | tar xz -C /usr/bin
-
-  echo ">>> Installing goml"
-  curl -sL "https://github.com/JulzDiverse/goml/releases/download/v0.7.0/goml-linux-amd64" -o /usr/bin/goml && chmod +x /usr/bin/goml
-
-  echo ">>> Installing aviator"
-  curl -sL "https://github.com/JulzDiverse/aviator/releases/download/v1.6.0/aviator-linux-amd64" -o /usr/bin/aviator && chmod +x /usr/bin/aviator
-
-  echo ">>> Installing fly"
-  curl -sL "https://jetson.eirini.cf-app.com/api/v1/cli?arch=amd64&platform=linux" -o /usr/bin/fly && chmod +x /usr/bin/fly
-
-  echo ">>> Installing dhall-json"
-  curl -sL "https://github.com/dhall-lang/dhall-haskell/releases/download/1.30.0/dhall-json-1.6.2-x86_64-linux.tar.bz2" | tar xvj -C /usr
-
-  echo ">>> Installing dhall-lsp-server"
-  curl -sL "https://github.com/dhall-lang/dhall-haskell/releases/download/1.30.0/dhall-lsp-server-1.0.5-x86_64-linux.tar.bz2" | tar xvj -C /usr
-
-  echo ">>> Installing git-duet"
-  curl -sL "https://github.com/git-duet/git-duet/releases/download/0.7.0/linux_amd64.tar.gz" | tar xvz -C /usr/bin
-
-  echo ">>> Installing terraform"
-  curl -sL "https://releases.hashicorp.com/terraform/0.12.26/terraform_0.12.26_linux_amd64.zip" -o /tmp/terraform.zip
-  unzip -u /tmp/terraform.zip -d /usr/bin
-  rm /tmp/terraform.zip
-
-  echo ">>> Installing bosh"
-  curl -sL "https://github.com/cloudfoundry/bosh-cli/releases/download/v6.2.1/bosh-cli-6.2.1-linux-amd64" -o /usr/bin/bosh && chmod +x /usr/bin/bosh
+install_brew_deps() {
+  echo ">>> Installing the brew dependencies"
+  brew bundle
 }
 
 install_k14s_tools() {
@@ -196,6 +67,211 @@ install_k14s_tools() {
 install_npm_packages() {
   echo ">>> Installing npm packages"
   npm install -g bash-language-server diff-so-fancy
+}
+
+mkdir_home_user_bin() {
+  mkdir -p $HOME/bin
+}
+
+install_cred_alert() {
+  os_name=$(uname | awk '{print tolower($1)}')
+  curl -o cred-alert-cli \
+    https://s3.amazonaws.com/cred-alert/cli/current-release/cred-alert-cli_${os_name}
+  chmod 755 cred-alert-cli
+  mv cred-alert-cli "$HOME/bin/"
+}
+
+install_ibmcloud_cli() {
+  if [[ ! $(command -v ibmcloud) ]]; then
+    echo ">>> Installing the IBM Cloud CLI"
+    curl -sL https://ibm.biz/idt-installer | bash
+    ibmcloud plugin install kubernetes-service -f
+  fi
+}
+
+setup_helm_client() {
+  echo ">>> Setting up the Helm client"
+  helm init --client-only
+}
+
+install_gotools() {
+  echo ">>> Installing golangci-lint"
+  curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$HOME/go/bin/" v1.26.0
+
+  echo ">>> Installing gopls"
+  GO111MODULE=on go_get golang.org/x/tools/gopls@latest
+
+  echo ">>> Installing fillstruct"
+  go_get github.com/davidrjenni/reftools/cmd/fillstruct
+
+  echo ">>> Installing gomodifytags"
+  go_get github.com/fatih/gomodifytags
+
+  echo ">>> Installing keyify"
+  go_get honnef.co/go/tools/cmd/keyify
+
+  echo ">>> Installing goimports"
+  go_get golang.org/x/tools/cmd/goimports
+}
+
+install_ohmyzsh() {
+  echo ">>> Installing Oh My Zsh"
+  [ ! -d "$HOME/.oh-my-zsh" ] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  # Delete default .zshrc to avoid stow conflicts
+  rm -f "$HOME/.zshrc"
+}
+
+install_tmux_plugin_manager() {
+  echo ">>> Installing TPM"
+  git_clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+}
+
+install_zsh_autosuggestions() {
+  echo ">>> Installing zsh-autosuggestions"
+  git_clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+}
+
+install_vim_plug() {
+  echo ">>> Installing vim-plug"
+  curl -fLo "$HOME/.local/share/nvim/site/autoload/plug.vim" --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+}
+
+install_nvim_extensions() {
+  echo ">>> Installing the NeoVim extensions"
+  sudo npm install -g neovim
+  pip3 install --upgrade pip
+  pip3 install --upgrade neovim
+  gem install neovim --user-install
+}
+
+install_rbenv() {
+  echo ">>> Installing Ruby with rbenv"
+
+  local rbenv_root
+  rbenv_root="$HOME/.rbenv"
+
+  if [[ -d "$rbenv_root" ]]; then
+    return
+  fi
+
+  git_clone https://github.com/rbenv/rbenv.git "$rbenv_root"
+
+  mkdir -p "$rbenv_root/plugins"
+  git_clone https://github.com/rbenv/ruby-build.git "$rbenv_root/plugins/ruby-build"
+
+  PATH="$rbenv_root/bin:$PATH" rbenv install 2.5.5
+}
+
+clone_git_repos() {
+  echo ">>> Cloning our Git repositories"
+
+  ssh-keyscan -t rsa github.com >>"$HOME/.ssh/known_hosts"
+
+  mkdir -p "$HOME/workspace"
+  pushd "$HOME/workspace"
+  {
+    git_clone "git@github.com:cloudfoundry-incubator/eirini-ci.git"
+    git_clone "git@github.com:cloudfoundry-incubator/eirini-release.git"
+    git_clone "git@github.com:cloudfoundry-incubator/eirini-staging.git"
+    git_clone "git@github.com:cloudfoundry-incubator/eirini.git"
+    git_clone "git@github.com:cloudfoundry/eirini-private-config.git"
+    git_clone "git@github.com:eirini-forks/eirini-home.git"
+    git_clone "git@github.com:eirini-forks/eirini-station.git"
+    git_clone "git@github.com:pivotal-cf/git-hooks-core.git"
+  }
+  popd
+}
+
+git_clone() {
+  local url path name
+  url=$1
+  path=${2:-""}
+
+  if [ -z "$path" ]; then
+    name=$(echo "$url" | sed 's/\.git//g' | cut -d / -f 2)
+    path="$HOME/workspace/$name"
+  fi
+
+  if [ -d "$path" ]; then
+    echo "Repository $path already exists. Skipping git clone..."
+    return
+  fi
+
+  git clone "$url" "$path"
+}
+
+configure_dotfiles() {
+  echo ">>> Installing eirini-home"
+  pushd "$HOME/workspace/eirini-home"
+  {
+    git checkout vagrant
+    ./install.sh
+  }
+  popd
+}
+
+install_vim_plugins() {
+  echo ">>> Installing the NeoVim plugins"
+  nvim --headless +PlugInstall +PlugUpdate +UpdateRemotePlugins +qall
+  PATH="$PATH:/usr/local/go/bin" nvim --headless +GoUpdateBinaries +qall
+}
+
+install_misc_tools() {
+  echo ">>> Installing Gomega"
+  go_get "github.com/onsi/gomega"
+
+  echo ">>> Installing Ginkgo"
+  go_get "github.com/onsi/ginkgo/ginkgo"
+
+  echo ">>> Installing Counterfeiter"
+  GO111MODULE=off go_get "github.com/maxbrunsfeld/counterfeiter"
+
+  echo ">>> Installing concourse-flake-hunter"
+  go_get "github.com/masters-of-cats/concourse-flake-hunter"
+}
+
+go_get() {
+  /usr/local/bin/go get -u "$1"
+}
+
+compile_authorized_keys() {
+  echo ">>> Generating ~/.ssh/authorized_keys"
+
+  local authorized_keys keys key
+  authorized_keys="$HOME/.ssh/authorized_keys"
+
+  while read -r gh_name; do
+    keys=$(curl -sL "https://api.github.com/users/$gh_name/keys" | jq -r ".[].key")
+    echo "$keys $gh_name" >>"$HOME/.ssh/authorized_keys"
+  done <"$HOME/workspace/eirini-home/team-github-ids"
+
+  # remove duplicate keys
+  keys=$(cat "$authorized_keys")
+  echo "$keys" | sort | uniq >"$authorized_keys"
+}
+
+init_pass_store() {
+  echo ">>> Initialising the pass store"
+  mkdir -p "$HOME/.password-store"
+  ln -sfn "$HOME/workspace/eirini-private-config/pass/eirini" "$HOME/.password-store/"
+  pass init "$(gpg --list-secret-keys | grep -o --color=never "[^<]\+@[^>]\+")"
+}
+
+install_pure_zsh_theme() {
+  echo ">>> Installing the pure prompt"
+  mkdir -p "$HOME/.zsh"
+  git_clone "https://github.com/sindresorhus/pure.git" "$HOME/.zsh/pure"
+  pushd "$HOME/.zsh/pure"
+  {
+    git pull -r
+  }
+  popd
+}
+
+switch_to_zsh() {
+  echo ">>> Setting Zsh as the default shell"
+  sudo chsh -s /bin/zsh "$(whoami)"
 }
 
 main $@
