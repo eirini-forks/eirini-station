@@ -1,2 +1,4 @@
 .vagrant
 *.log
+./Brewfile.lock.json
+.DS_Store
