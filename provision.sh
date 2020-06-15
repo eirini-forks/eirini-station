@@ -44,6 +44,7 @@ main() {
   install_rbenv
   install_cred_alert
   clone_git_repos
+  install_git_hooks
   configure_dotfiles
   install_vim_plugins
   install_misc_tools
@@ -186,6 +187,17 @@ clone_git_repos() {
     git_clone "git@github.com:pivotal-cf/git-hooks-core.git"
   }
   popd
+}
+
+install_git_hooks() {
+  for repo in "eirini" "eirini-staging" "eirini-release"; do
+    pushd "$HOME/workspace/$repo"
+    {
+      cp git-hooks/* .git/hooks/
+      git init
+    }
+    popd
+  done
 }
 
 git_clone() {
