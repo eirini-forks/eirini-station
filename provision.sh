@@ -58,6 +58,7 @@ main() {
 
 install_brew_deps() {
   echo ">>> Installing the brew dependencies"
+  brew update
   brew bundle
 }
 
