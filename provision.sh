@@ -220,6 +220,10 @@ git_clone() {
   fi
 
   git clone "$url" "$path"
+
+  if [ -f "$path/.gitmodules" ]; then
+    git -C "$path" submodule update --init --recursive
+  fi
 }
 
 configure_dotfiles() {
