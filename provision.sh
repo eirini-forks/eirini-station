@@ -254,6 +254,9 @@ install_misc_tools() {
 
   echo ">>> Installing concourse-flake-hunter"
   go_get "github.com/masters-of-cats/concourse-flake-hunter"
+
+  echo ">>> Installing flightattendant"
+  go_get "github.com/masters-of-cats/flightattendant"
 }
 
 go_get() {
