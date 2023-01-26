@@ -12,18 +12,18 @@ main() {
         ;;
       c)
         shift $((OPTIND - 1))
-        for command in $@; do
+        for command in "$@"; do
           $command
         done
         exit 0
         ;;
       h)
-        echo $USAGE
+        echo "$USAGE"
         exit 0
         ;;
       \?)
         echo "Invalid option: $OPTARG" 1>&2
-        echo $USAGE
+        echo "$USAGE"
         exit 1
         ;;
     esac
@@ -41,7 +41,6 @@ main() {
   configure_dotfiles
   clone_git_repos
   install_vim_plugins
-  install_kubectl_plugins
   install_misc_tools
   install_pure_zsh_theme
   install_tmux_plugin_manager
@@ -52,13 +51,13 @@ main() {
 }
 
 mkdir_home_user_bin() {
-  mkdir -p $HOME/bin
+  mkdir -p "$HOME/bin"
 }
 
 install_cred_alert() {
   os_name=$(uname | awk '{print tolower($1)}')
   curl -o cred-alert-cli \
-    https://s3.amazonaws.com/cred-alert/cli/current-release/cred-alert-cli_${os_name}
+    "https://s3.amazonaws.com/cred-alert/cli/current-release/cred-alert-cli_${os_name}"
   chmod 755 cred-alert-cli
   mv cred-alert-cli "$HOME/bin/"
 }
@@ -69,37 +68,19 @@ install_docker() {
     sudo apt upgrade docker-ce docker-ce-cli docker-ce-rootless-extras -y
   else
     curl -fsSL get.docker.com | sudo sh
-    sudo usermod -aG docker $USER
+    sudo usermod -aG docker "$USER"
   fi
 }
 
 install_gotools() {
   echo ">>> Installing golangci-lint"
-  curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$HOME/go/bin/" v1.49.0
+  local url
+  url="$(curl -sSfL https://api.github.com/repos/golangci/golangci-lint/releases/latest | jq -r '.assets[]|select(.name|match("linux-amd64.deb")).browser_download_url')"
+  curl -sSfLo golangci-lint.deb "$url"
+  sudo dpkg --install golangci-lint.deb
 
   echo ">>> Installing gopls"
   go_install golang.org/x/tools/gopls
-
-  echo ">>> Installing fillstruct"
-  go_install github.com/davidrjenni/reftools/cmd/fillstruct
-
-  echo ">>> Installing gomodifytags"
-  go_install github.com/fatih/gomodifytags
-
-  echo ">>> Installing keyify"
-  go_install honnef.co/go/tools/cmd/keyify
-
-  echo ">>> Installing goimports"
-  go_install golang.org/x/tools/cmd/goimports
-
-  echo ">>> Installing gofumpt"
-  go_install mvdan.cc/gofumpt
-
-  echo ">>> Installing gci"
-  go_install github.com/daixiang0/gci
-
-  echo ">>> Installing gotags"
-  go_install github.com/jstemmer/gotags
 
   echo ">>> Installing setup-envtest"
   go_install sigs.k8s.io/controller-runtime/tools/setup-envtest
@@ -119,7 +100,7 @@ install_tmux_plugin_manager() {
 
 install_zsh_autosuggestions() {
   echo ">>> Installing zsh-autosuggestions"
-  git_clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+  git_clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
 }
 
 install_vim_plug() {
@@ -168,31 +149,13 @@ clone_git_repos() {
   mkdir -p "$HOME/workspace"
   pushd "$HOME/workspace"
   {
-    git_clone "git@github.com:cloudfoundry-incubator/eirini-ci.git"
-    git_clone "git@github.com:cloudfoundry-incubator/eirini-release.git" "" develop
-    git_clone "git@github.com:cloudfoundry-incubator/eirini.git"
-    git_clone "git@github.com:cloudfoundry-incubator/eirini-controller.git"
     git_clone "git@github.com:cloudfoundry/korifi.git"
     git_clone "git@github.com:cloudfoundry/korifi-ci.git"
     git_clone "git@github.com:cloudfoundry/cf-k8s-secrets.git"
-    git_clone "git@github.com:cloudfoundry/cli.git"
-    add_remote cli ef "git@github.com:eirini-forks/cli.git"
     git_clone "git@github.com:eirini-forks/eirini-station.git"
   }
 
   popd
-}
-
-add_remote() {
-  local path remote_uri remote_name
-  path="$1"
-  remote_name="$2"
-  remote_uri="$3"
-
-  if ! git -C "$path" remote -v | grep -q "^$remote_name\b"; then
-    git -C "$path" remote add "$remote_name" "$remote_uri"
-    git -C "$path" fetch "$remote_name"
-  fi
 }
 
 git_clone() {
@@ -258,61 +221,21 @@ install_vim_plugins() {
 
 install_misc_tools() {
   echo ">>> Installing Ginkgo"
-  go_install "github.com/onsi/ginkgo/v2/ginkgo"
+  go install github.com/onsi/ginkgo/v2/ginkgo@latest
 
   echo ">>> Installing concourse-flake-hunter"
-  go_install "github.com/eirini-forks/concourse-flake-hunter"
+  go install github.com/eirini-forks/concourse-flake-hunter@latest
 
   echo ">>> Installing fly"
-  curl -sL "https://ci.korifi.cf-app.com/api/v1/cli?arch=amd64&platform=linux" -o "$HOME/bin/fly" && chmod +x "$HOME/bin/fly"
+  curl -sL "https://ci.korifi.cf-app.com/api/v1/cli?arch=amd64&platform=linux" -o "$HOME/bin/fly"
+  chmod +x "$HOME/bin/fly"
 
-  echo ">>> Installing flightattendant"
-  go_install "github.com/masters-of-cats/flightattendant"
+  echo ">>> Installing k9s"
+  curl -LsSf https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_x86_64.tar.gz | tar xvzf - -C "$HOME/bin" k9s
 
-  echo ">>> Installing k9s (v0.25.8)"
-  curl -L https://github.com/derailed/k9s/releases/download/v0.25.8/k9s_Linux_x86_64.tar.gz | tar xvzf - -C "$HOME/bin" k9s
-
-  echo ">>> Installing kind (v0.17.0)"
-  curl -L https://github.com/kubernetes-sigs/kind/releases/download/v0.17.0/kind-linux-amd64 -o "$HOME/bin/kind"
+  echo ">>> Installing kind"
+  curl -LsSf https://github.com/kubernetes-sigs/kind/releases/latest/download/kind-linux-amd64 -o "$HOME/bin/kind"
   chmod +x "$HOME/bin/kind"
-
-  echo ">>> Installing promql-cli (v0.2.1)"
-  curl -L https://github.com/nalbury/promql-cli/releases/download/v0.2.1/promql-v0.2.1-linux-amd64.tar.gz | tar xvzf - -C "$HOME/bin" promql
-  chmod +x "$HOME/bin/promql"
-
-  echo ">>> Installing kubeval (v0.16.1)"
-  curl -L https://github.com/instrumenta/kubeval/releases/download/v0.16.1/kubeval-linux-amd64.tar.gz | tar xvzf - -C "$HOME/bin" kubeval
-  chmod +x "$HOME/bin/kubeval"
-}
-
-install_telepresence() {
-  local tmpdir
-  tmpdir="$(mktemp -d)"
-  trap 'rm -rf $tmpdir' RETURN
-
-  git clone --branch 0.109 https://github.com/telepresenceio/telepresence.git "$tmpdir"
-
-  PREFIX="$HOME" "$tmpdir/install.sh"
-}
-
-install_kubectl_plugins() {
-  HNC_VERSION=v0.8.0
-  HNC_PLATFORM=linux_amd64
-  curl -L https://github.com/kubernetes-sigs/multi-tenancy/releases/download/hnc-${HNC_VERSION}/kubectl-hns_${HNC_PLATFORM} -o "$HOME/bin/kubectl-hns"
-  chmod +x "$HOME/bin/kubectl-hns"
-}
-
-go_install() {
-  local package=$1
-  local version=${2:-latest}
-
-  /usr/local/go/bin/go install $package@$version
-}
-
-init_pass_store() {
-  echo ">>> Initialising the pass store"
-  mkdir -p "$HOME/.password-store"
-  ln -sfn "$HOME/workspace/eirini-private-config/pass/eirini" "$HOME/.password-store/"
 }
 
 install_pure_zsh_theme() {
@@ -335,15 +258,6 @@ install_pure_zsh_theme() {
 switch_to_zsh() {
   echo ">>> Setting Zsh as the default shell"
   sudo chsh -s /bin/zsh "$(whoami)"
-}
-
-configure_gpg() {
-  mkdir -p ~/.gnupg
-  chmod 700 ~/.gnupg
-  cat <<EOF >~/.gnupg/gpg.conf
-no-autostart
-pinentry-mode loopback
-EOF
 }
 
 main $@
