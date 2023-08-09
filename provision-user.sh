@@ -125,10 +125,10 @@ clone_git_repos() {
   mkdir -p "$HOME/workspace"
   pushd "$HOME/workspace"
   {
-    git_clone "git@github.com:cloudfoundry/korifi.git"
-    git_clone "git@github.com:cloudfoundry/korifi-ci.git"
-    git_clone "git@github.com:cloudfoundry/cf-k8s-secrets.git"
-    git_clone "git@github.com:eirini-forks/eirini-station.git"
+    git_clone "https://github.com/cloudfoundry/korifi.git"
+    git_clone "https://github.com/cloudfoundry/korifi-ci.git"
+    #git_clone "https://github.com/cloudfoundry/cf-k8s-secrets.git"
+    git_clone "https://github.com/eirini-forks/eirini-station.git"
   }
 
   popd
@@ -164,12 +164,16 @@ git_clone() {
 
 configure_dotfiles() {
   echo ">>> Installing eirini-home"
+  # backing up any previous existing ssh-key
+  if [ -f $HOME/.ssh/authorized_keys ]; then 
+    KEYS="$(cat $HOME/.ssh/authorized_keys)"
+  fi
 
   ssh-keyscan -t rsa github.com >>"$HOME/.ssh/known_hosts"
 
-  git_clone "git@github.com:pivotal-cf/git-hooks-core.git"
-  git_clone "git@github.com:cloudfoundry/eirini-private-config.git"
-  git_clone "git@github.com:eirini-forks/eirini-home.git"
+  git_clone "https://github.com/pivotal-cf/git-hooks-core.git"
+  #git_clone "https://github.com/cloudfoundry/eirini-private-config.git"
+  git_clone "https://github.com/eirini-forks/eirini-home.git"
 
   pushd "$HOME/workspace/eirini-home"
   {
@@ -183,6 +187,10 @@ configure_dotfiles() {
     git init       # install git-duet hooks on eirini-home
   }
   popd
+  # restoring previously backed up ssh-keys
+  if [ "$KEYS" ]; then
+    echo "$KEYS" >> $HOME/.ssh/authorized_keys
+  fi
 }
 
 install_misc_tools() {

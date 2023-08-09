@@ -190,7 +190,13 @@ install_golang() {
 
 install_nodejs() {
   echo ">>> Installing NodeJS"
-  curl -fsSL https://deb.nodesource.com/setup_current.x | bash -
+  rm -f /etc/apt/trusted.gpg.d/nodesource.gpg
+  rm -f /etc/apt/sources.list.d/nodesource.list
+  curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/nodesource.gpg
+  NODE_MAJOR=16
+  echo "deb [signed-by=/etc/apt/trusted.gpg.d/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+  chmod 644 /etc/apt/trusted.gpg.d/nodesource.gpg
+  apt-get update
   apt-get -y install nodejs
 }
 
@@ -201,9 +207,12 @@ install_gcloud_cli() {
 }
 
 install_cf_tools() {
-  echo ">>> Installing the Cloud Foundky CLI"
-  wget -qO- https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key >/etc/apt/trusted.gpg.d/cloudfoundry.asc
-  echo "deb https://packages.cloudfoundry.org/debian stable main" >/etc/apt/sources.list.d/cloudfoundry-cli.list
+  echo ">>> Installing the Cloud Foundry CLI"
+  rm -f /etc/apt/trusted.gpg.d/cloudfoundry-cli.gpg
+  rm -f /etc/apt/sources.list.d/cloudfoundry-cli.list
+  wget -qO- https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/cloudfoundry-cli.gpg
+  echo "deb https://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+  chmod 644 /etc/apt/trusted.gpg.d/cloudfoundry-cli.gpg
   apt-get update
   apt-get -y install cf8-cli
 
@@ -220,8 +229,11 @@ install_aws_cli() {
 
 install_hashicorp_tools() {
   echo ">>> Installing Vault and Terraform"
-  wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor >/usr/share/keyrings/hashicorp-archive-keyring.gpg
-  echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" >/etc/apt/sources.list.d/hashicorp.list
+  rm -f /etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg
+  rm -f /etc/apt/sources.list.d/hashicorp.list
+  wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
+  chmod 644 /etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg
   apt-get update
   apt-get install -y vault terraform
 }
@@ -245,16 +257,19 @@ install_language_servers() {
 
 install_github_cli() {
   echo ">>> Installing Github CLI"
-  wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg >/usr/share/keyrings/githubcli-archive-keyring.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" >/etc/apt/sources.list.d/github-cli.list
+  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg &&
+    chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg &&
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list
   apt-get update
   apt-get install -y gh
 }
 
 install_helm3() {
   echo ">>> Installing Helm 3"
-  wget -qO- https://baltocdn.com/helm/signing.asc | gpg --dearmor >/usr/share/keyrings/helm.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" >/etc/apt/sources.list.d/helm-stable-debian.list
+  curl https://baltocdn.com/helm/signing.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/helm.gpg
+  apt-get install apt-transport-https --yes
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list
+  chmod 644 /etc/apt/trusted.gpg.d/helm.gpg
   apt-get update
   apt-get install -y helm
 }
