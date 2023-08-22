@@ -190,7 +190,7 @@ install_golang() {
 
 install_nodejs() {
   echo ">>> Installing NodeJS"
-  curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+  curl -fsSL https://deb.nodesource.com/setup_current.x | bash -
   apt-get -y install nodejs
 }
 
