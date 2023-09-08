@@ -185,7 +185,7 @@ install_golang() {
   echo ">>> Installing Golang"
   rm -rf /usr/local/go
   add-apt-repository -y ppa:longsleep/golang-backports
-  apt-get -y install golang-go
+  apt-get -y install golang-1.20-go
 }
 
 install_nodejs() {
