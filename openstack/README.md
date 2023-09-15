@@ -6,11 +6,13 @@ CLI](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-c
 
 ## Dependencies
 
-The scripts needs the [`openstack` CLI](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html)
-and Openstack RC File sourced Plus these additional these environment variables set:
-  - `EIRINI_STATION_USERNAME`: the username associated to your VM
-  - `EIRINI_STATION_FLOATING_NETWORK`: The FloatingIP Network you retreived earlier
-  - `VMUSER`: The name of the user that will exist on the VM
+The scripts needs:
+  -  the [`openstack` CLI](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html)
+  - Openstack RC File sourced
+  - These additional environment variables set:
+    - `EIRINI_STATION_USERNAME`: the username associated to your VM
+    - `EIRINI_STATION_FLOATING_NETWORK`: The FloatingIP Network you retreived earlier
+    - `VMUSER`: The name of the user that will exist on the VM
 
 ## Usage
 
