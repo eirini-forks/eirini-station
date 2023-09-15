@@ -49,7 +49,21 @@ Vagrant.configure("2") do |config|
 
     override.ssh.extra_args = ["-R", "/home/vagrant/.gnupg/S.gpg-agent-host:#{home}/.gnupg/S.gpg-agent"]
   end
+config.vm.provider :openstack do |os, override|
+  override.ssh.username = ENV.fetch('VMUSER','ccloud').to_i
+  os.openstack_auth_url = ENV['OS_AUTH_URL']
+  os.username           = ENV['OS_USERNAME']
+  os.password           = ENV['OS_PASSWORD']
+  os.tenant_name        = ENV['OS_PROJECT_NAME']
+  os.flavor             = 'g_c8_m16'
+  os.image              = 'SAP-compliant-ubuntu-22-04'
+  os.floating_ip_pool   = ENV['STATION_IP']
+
 end
+
+end
+
+
 
 class SetHostTimezonePlugin < Vagrant.plugin('2')
   class SetHostTimezoneAction

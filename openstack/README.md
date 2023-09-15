@@ -1,20 +1,23 @@
-# Eirini GCP station
+# Eirini Openstack station
 
 This is a set of scripts which makes it easier to create development stations
-on GCP. The scripts only use the [`gcloud`
-CLI](https://cloud.google.com/sdk/gcloud) and don't automate provisioning.
+on Openstack. The scripts only use the [`openstack`
+CLI](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html) and don't automate provisioning.
 
 ## Dependencies
 
-The scripts only need the [`gcloud` CLI](https://cloud.google.com/sdk/gcloud)
-and the `$EIRINI_STATION_USERNAME` environment variable set.
+The scripts needs the [`openstack` CLI](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html)
+and Openstack RC File sourced Plus these additional these environment variables set:
+  - `EIRINI_STATION_USERNAME`: the username associated to your VM
+  - `EIRINI_STATION_FLOATING_NETWORK`: The FloatingIP Network you retreived earlier
+  - `VMUSER`: The name of the user that will exist on the VM
 
 ## Usage
 
 To get a working station:
 
 ```
-$ ./auth.sh
+$ source </path/to/openstack/rc/file>
 $ ./create.sh
 $ ./ssh.sh
 ```
@@ -23,7 +26,8 @@ Once on the machine, you'll have to provision it manually:
 
 ```
 $ mkdir workspace
-$ git clone git@github.com:eirini-forks/eirini-station.git workspace/eirini-station
+$ sudo apt update && sudo apt-get -y install git snap
+$ git clone https://github.com/eirini-forks/eirini-station.git workspace/eirini-station
 $ sudo workspace/eirini-station/provision.sh
 $ workspace/eirini-station/provision-user.sh
 ```

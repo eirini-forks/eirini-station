@@ -15,3 +15,7 @@ set -euo pipefail
 #   --region="europe-west2"
 
 openstack server delete "$EIRINI_STATION_USERNAME-eirini-station" --wait
+
+openstack floating ip delete "$STATION_IP"
+
+openstack delete volume "$STATION_VOLUME"
