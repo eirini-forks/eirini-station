@@ -200,8 +200,10 @@ install_golang() {
 
 install_nodejs() {
   echo ">>> Installing NodeJS"
-  curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-  apt-get -y install nodejs
+  #curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+  #apt-get -y install nodejs
+  curl -sL https://nsolid-deb.nodesource.com/nsolid_setup_4.x | sudo bash -
+  apt-get -y install nsolid-gallium nsolid-console
 }
 
 install_gcloud_cli() {
@@ -215,9 +217,9 @@ install_gcloud_cli() {
 }
 
 install_cf_tools() {
-  echo ">>> Installing the Cloud Foundky CLI"
-  wget -qO- https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key >/etc/apt/trusted.gpg.d/cloudfoundry.asc
-  echo "deb https://packages.cloudfoundry.org/debian stable main" >/etc/apt/sources.list.d/cloudfoundry-cli.list
+  wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+  echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+  
   apt-get update
   apt-get -y install cf8-cli
 
@@ -234,8 +236,9 @@ install_aws_cli() {
 
 install_hashicorp_tools() {
   echo ">>> Installing Vault and Terraform"
-  wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor >/usr/share/keyrings/hashicorp-archive-keyring.gpg
-  echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" >/etc/apt/sources.list.d/hashicorp.list
+  wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+  chmod 644 /etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg
   apt-get update
   apt-get install -y vault terraform
 }
@@ -255,25 +258,33 @@ install_language_servers() {
   echo ">>> Installing language servers"
   #snap install bash-language-server --classic
   #snap install typescript-language-server
-  apt-get install -y npm
+  apt-get install -y npm node-read-package-json
   npm install -g typescript-language-server typescript
   npm i -g bash-language-server
 }
 
 install_github_cli() {
   echo ">>> Installing Github CLI"
-  wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg >/usr/share/keyrings/githubcli-archive-keyring.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" >/etc/apt/sources.list.d/github-cli.list
+  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null 
   apt-get update
   apt-get install -y gh
+
+    
 }
 
 install_helm3() {
   echo ">>> Installing Helm 3"
-  wget -qO- https://baltocdn.com/helm/signing.asc | gpg --dearmor >/usr/share/keyrings/helm.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" >/etc/apt/sources.list.d/helm-stable-debian.list
+  curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/helm.gpg > /dev/null
+  apt-get install apt-transport-https --yes
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+  chmod 644 /etc/apt/trusted.gpg.d/helm.gpg
   apt-get update
   apt-get install -y helm
+
+
+  curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 }
 
 main "$@"

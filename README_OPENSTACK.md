@@ -21,6 +21,7 @@
   - `EIRINI_STATION_USERNAME`: the username associated to your VM
   - `EIRINI_STATION_FLOATING_NETWORK`: The FloatingIP Network you retreived earlier
   - `VMUSER`: The name of the user that will exist on the VM
+  - `KEYNAME`: The name of your ssh-key in openstack
 
 
 ## Usage

@@ -3,11 +3,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
-echo $STATION_IP
+
 echo "Provisioning $EIRINI_STATION_USERNAME-eirini-station"
-scp -r ~/git/eirini-station/provision*.sh "$VMUSER@$STATION_IP:/tmp"
-ssh -A "$VMUSER@$STATION_IP" "sudo /tmp/provision.sh"
-ssh -A "$VMUSER@$STATION_IP" "/tmp/provision-user.sh"
+scp -i /Users/d062748/.ssh/ccee_privkey -r ~/git/eirini-station/provision*.sh "$VMUSER@$STATION_IP:/tmp" 
+ssh -i /Users/d062748/.ssh/ccee_privkey -A "$VMUSER@$STATION_IP" "sudo /tmp/provision.sh" 
+ssh -i /Users/d062748/.ssh/ccee_privkey -A "$VMUSER@$STATION_IP" "/tmp/provision-user.sh"
 
 if [[ -f "$STATION_HISTORY_BACKUP" ]]; then
   scp -r "$STATION_HISTORY_BACKUP" "$VMUSER@$STATION_IP:~/.zsh_history"

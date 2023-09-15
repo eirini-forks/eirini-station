@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-
 echo Creating server "$EIRINI_STATION_USERNAME-eirini-station"
 openstack server create "$EIRINI_STATION_USERNAME-eirini-station" \
   --flavor "g_c8_m16" \
@@ -10,7 +9,7 @@ openstack server create "$EIRINI_STATION_USERNAME-eirini-station" \
   --wait >/dev/null \
   --network "korifi-dev_private" \
   --security-group "default" \
-  --key-name "my_mac" \
+  --key-name "$KEYNAME" \
   --tag "$EIRINI_STATION_USERNAME-eirini-station"
 
 openstack floating ip create "$EIRINI_STATION_FLOATING_NETWORK" \
@@ -28,4 +27,5 @@ source "$SCRIPT_DIR/common.sh"
 echo "Done creating server"
 echo "Name   $STATION_NAME"
 echo "IP     $STATION_IP"
+echo "Volume $STATION_VOLUME"
 echo "Status $STATION_STATUS"
