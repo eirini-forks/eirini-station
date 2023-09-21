@@ -4,7 +4,7 @@ set -euo pipefail
 echo Creating server "$EIRINI_STATION_USERNAME-eirini-station"
 openstack server create "$EIRINI_STATION_USERNAME-eirini-station" \
   --flavor "g_c8_m16" \
-  --image "SAP-compliant-ubuntu-20-04" \
+  --image "SAP-compliant-ubuntu-22-04" \
   --boot-from-volume "100" \
   --wait >/dev/null \
   --network "korifi-dev_private" \

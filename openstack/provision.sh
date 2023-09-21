@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 echo "Provisioning $EIRINI_STATION_USERNAME-eirini-station"
-scp -r ~/git/eirini-station/provision*.sh "$VMUSER@$STATION_IP:/tmp" 
+scp -r ~/workspace/eirini-station/provision*.sh "$VMUSER@$STATION_IP:/tmp" 
 ssh -A "$VMUSER@$STATION_IP" "sudo /tmp/provision.sh" 
 ssh -A "$VMUSER@$STATION_IP" "/tmp/provision-user.sh"
 

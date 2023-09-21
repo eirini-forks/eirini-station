@@ -217,6 +217,7 @@ install_gcloud_cli() {
 }
 
 install_cf_tools() {
+  echo ">>> Installing the Cloud Foundry CLI"
   wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
   echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
   
@@ -270,8 +271,6 @@ install_github_cli() {
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null 
   apt-get update
   apt-get install -y gh
-
-    
 }
 
 install_helm3() {
@@ -282,9 +281,6 @@ install_helm3() {
   chmod 644 /etc/apt/trusted.gpg.d/helm.gpg
   apt-get update
   apt-get install -y helm
-
-
-  curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 }
 
 main "$@"
