@@ -39,9 +39,9 @@ main() {
   add_sshd_config
   setup_locale
   setup_inotify_limit
+  setup_pam
   install_packages
   install_aws_cli
-  install_snaps
   install_kubectl
   install_neovim
   install_nodejs
@@ -89,6 +89,11 @@ setup_inotify_limit() {
   echo "fs.inotify.max_user_instances = 512" >>/etc/sysctl.d/50-inotify-limit.conf
 
   service procps force-reload
+}
+
+setup_pam() {
+  echo ">>> pre-configuring PAM"
+  pam-auth-update --force --enable capability pwquality systemd unix
 }
 
 install_packages() {
@@ -163,13 +168,6 @@ install_packages() {
     zsh 
 }
 
-install_snaps() {
-  echo ">>> Installing the Snap packages"
-  rm -f /usr/bin/nvim
-  #snap install lolcat
-  #snap install shellcheck --edge
-}
-
 install_kubectl() {
   echo ">>> Installing kubectl"
   #snap remove google-cloud-sdk
@@ -186,6 +184,7 @@ install_kubectl() {
 
 install_neovim() {
   echo ">>> Installing Neovim"
+  rm -f /usr/bin/nvim
   curl -sSfLo nvim https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
   mv nvim /usr/local/bin/nvim
   chmod a+x /usr/local/bin/nvim
@@ -200,16 +199,18 @@ install_golang() {
 
 install_nodejs() {
   echo ">>> Installing NodeJS"
-  #curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-  #apt-get -y install nodejs
-  curl -sL https://nsolid-deb.nodesource.com/nsolid_setup_4.x | sudo bash -
-  apt-get -y install nsolid-gallium nsolid-console
+  rm -f /etc/apt/trusted.gpg.d/nodesource.gpg
+  rm -f /etc/apt/sources.list.d/nodesource.list
+  curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/nodesource.gpg
+  NODE_MAJOR=16
+  echo "deb [signed-by=/etc/apt/trusted.gpg.d/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+  chmod 644 /etc/apt/trusted.gpg.d/nodesource.gpg
+  apt-get update
+  apt-get -y install nodejs
 }
 
 install_gcloud_cli() {
   echo ">>> Installing the Google Cloud CLI"
-  #snap remove google-cloud-sdk
-  #snap install google-cloud-cli --classic
   curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-445.0.0-linux-x86_64.tar.gz
   tar -xf google-cloud-cli-445.0.0-linux-x86_64.tar.gz
   ./google-cloud-sdk/install.sh -q --rc-path ~/.bashrc
@@ -218,9 +219,11 @@ install_gcloud_cli() {
 
 install_cf_tools() {
   echo ">>> Installing the Cloud Foundry CLI"
-  wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
-  echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
-  
+  rm -f /etc/apt/trusted.gpg.d/cloudfoundry-cli.gpg
+  rm -f /etc/apt/sources.list.d/cloudfoundry-cli.list
+  wget -qO- https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/cloudfoundry-cli.gpg
+  echo "deb https://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+  chmod 644 /etc/apt/trusted.gpg.d/cloudfoundry-cli.gpg
   apt-get update
   apt-get -y install cf8-cli
 
@@ -237,7 +240,9 @@ install_aws_cli() {
 
 install_hashicorp_tools() {
   echo ">>> Installing Vault and Terraform"
-  wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg
+  rm -f /etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg
+  rm -f /etc/apt/sources.list.d/hashicorp.list
+  wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
   chmod 644 /etc/apt/trusted.gpg.d/hashicorp-archive-keyring.gpg
   apt-get update
@@ -259,9 +264,9 @@ install_language_servers() {
   echo ">>> Installing language servers"
   #snap install bash-language-server --classic
   #snap install typescript-language-server
-  apt-get install -y npm node-read-package-json
+  apt-get install -y node-read-package-json
   npm install -g typescript-language-server typescript
-  npm i -g bash-language-server
+  npm install -g bash-language-server
 }
 
 install_github_cli() {

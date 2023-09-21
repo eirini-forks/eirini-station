@@ -5,8 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 echo "Deleting server"
 
-echo "Backing up history file into: '$STATION_HISTORY_BACKUP'"
-scp -r "$EIRINI_STATION_USERNAME@$STATION_IP:~/.zsh_history" "$STATION_HISTORY_BACKUP" || true
+if [[ -f "$STATION_HISTORY_BACKUP" ]]; then
+  echo "Backing up history file into: '$STATION_HISTORY_BACKUP'"
+  scp -r "$EIRINI_STATION_USERNAME@$STATION_IP:~/.zsh_history" "$STATION_HISTORY_BACKUP" || true
+fi
 
 openstack server delete "$EIRINI_STATION_USERNAME-eirini-station" --wait
 

@@ -9,4 +9,4 @@ export STATION_NETWORK_NAME=$(openstack network list --format json | jq -r ".[0]
 export STATION_STATUS="$(jq -r ".status" <<<$info)"
 export STATION_NAME="$(jq -r ".name" <<<$info)"
 export STATION_VOLUME="$(jq -r '.volumes.[0] | .id' <<<$info)"
-# export STATION_HISTORY_BACKUP="$HOME/eirini-station-history-backup"
+export STATION_HISTORY_BACKUP="$HOME/eirini-station-history-backup"
