@@ -12,5 +12,4 @@ fi
 scp \
   -A \
   -o "UserKnownHostsFile=/dev/null" \
-  "ccloud@${STATION_IP}:$1" "$2"
-  #"${EIRINI_STATION_USERNAME}@${STATION_IP}:$1" "$2"
+  "${VMUSER}@${STATION_IP}:$1" "$2"

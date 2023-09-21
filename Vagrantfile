@@ -51,8 +51,6 @@ Vagrant.configure("2") do |config|
   end
 end
 
-
-
 class SetHostTimezonePlugin < Vagrant.plugin('2')
   class SetHostTimezoneAction
     def initialize(app, env)
