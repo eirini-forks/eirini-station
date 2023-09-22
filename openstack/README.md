@@ -23,10 +23,11 @@ To get a working station:
 ```
 $ source </path/to/openstack/rc/file>
 $ ./create.sh
+$ ./provision.sh
 $ ./ssh.sh
 ```
 
-Once on the machine, you'll have to provision it manually:
+Once the machine is created, you could also provision it manually:
 
 ```
 $ mkdir workspace
