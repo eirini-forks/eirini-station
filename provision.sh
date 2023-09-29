@@ -39,9 +39,9 @@ main() {
   add_sshd_config
   setup_locale
   setup_inotify_limit
-  setup_pam
   install_packages
   install_aws_cli
+  install_snaps
   install_kubectl
   install_neovim
   install_nodejs
@@ -89,11 +89,6 @@ setup_inotify_limit() {
   echo "fs.inotify.max_user_instances = 512" >>/etc/sysctl.d/50-inotify-limit.conf
 
   service procps force-reload
-}
-
-setup_pam() {
-  echo ">>> pre-configuring PAM"
-  pam-auth-update --force --enable capability pwquality systemd unix
 }
 
 install_packages() {
@@ -163,7 +158,7 @@ install_packages() {
     wget \
     xsel \
     zlib1g-dev \
-    zsh 
+    zsh
 }
 
 install_snaps() {

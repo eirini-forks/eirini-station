@@ -29,4 +29,3 @@ echo "Name   $STATION_NAME"
 echo "IP     $STATION_IP"
 echo "Volume $STATION_VOLUME"
 echo "Status $STATION_STATUS"
-.
