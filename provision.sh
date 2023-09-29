@@ -136,7 +136,6 @@ install_packages() {
     libtool \
     libtool-bin \
     libyaml-dev \
-    lolcat \
     net-tools \
     netcat-openbsd \
     ntp \
@@ -153,7 +152,6 @@ install_packages() {
     ripgrep \
     ruby-dev \
     rubygems \
-    shellcheck \
     socat \
     software-properties-common \
     sshfs \
@@ -168,23 +166,21 @@ install_packages() {
     zsh 
 }
 
+install_snaps() {
+  echo ">>> Installing the Snap packages"
+  rm -f /usr/bin/nvim
+  snap install lolcat
+  snap install shellcheck --edge
+}
+
 install_kubectl() {
   echo ">>> Installing kubectl"
-  #snap remove google-cloud-sdk
-  #snap install kubectl --classic
-  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
-  RESULT=$(echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check)
-  if [[ ! $RESULT == "kubectl: OK" ]]
-   then echo "failure installing kubectl"
-   exit 0
-  fi
-  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  snap remove google-cloud-sdk
+  snap install kubectl --classic
 }
 
 install_neovim() {
   echo ">>> Installing Neovim"
-  rm -f /usr/bin/nvim
   curl -sSfLo nvim https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
   mv nvim /usr/local/bin/nvim
   chmod a+x /usr/local/bin/nvim
@@ -211,10 +207,8 @@ install_nodejs() {
 
 install_gcloud_cli() {
   echo ">>> Installing the Google Cloud CLI"
-  curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-445.0.0-linux-x86_64.tar.gz
-  tar -xf google-cloud-cli-445.0.0-linux-x86_64.tar.gz
-  ./google-cloud-sdk/install.sh -q --rc-path ~/.bashrc
-  source ~/.bashrc
+  snap remove google-cloud-sdk
+  snap install google-cloud-cli --classic
 }
 
 install_cf_tools() {
@@ -262,11 +256,8 @@ install_misc_tools() {
 
 install_language_servers() {
   echo ">>> Installing language servers"
-  #snap install bash-language-server --classic
-  #snap install typescript-language-server
-  apt-get install -y node-read-package-json
-  npm install -g typescript-language-server typescript
-  npm install -g bash-language-server
+  snap install bash-language-server --classic
+  snap install typescript-language-server
 }
 
 install_github_cli() {
