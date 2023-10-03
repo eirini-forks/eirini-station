@@ -10,15 +10,19 @@ if [[ "$STATION_STATUS" != "RUNNING" ]]; then
 fi
 
 for attempt in $(seq 10); do
-  if ssh \
+  if ! ssh \
+    -A "$EIRINI_STATION_USERNAME@$STATION_IP" \
+    "echo export STATION_IP=$STATION_IP > /home/$EIRINI_STATION_USERNAME/.oh-my-zsh/custom/station_ip.zsh"; then
+    sleep 1
+    continue
+  fi
+
+  ssh \
     -A \
     -o "UserKnownHostsFile=/dev/null" \
     "$@" \
-    "${EIRINI_STATION_USERNAME}@${STATION_IP}"; then
-    exit 0
-  fi
-
-  sleep 1
+    "${EIRINI_STATION_USERNAME}@${STATION_IP}"
+  exit 0
 done
 
 echo "Unable to ssh to the station after $attempt attempts"
