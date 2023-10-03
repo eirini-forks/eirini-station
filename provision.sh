@@ -274,4 +274,9 @@ install_helm3() {
   apt-get install -y helm
 }
 
+install_openstack() {
+  echo ">>> Installing Openstack CLI"
+  pip3 install python-openstackclient
+}
+
 main "$@"
