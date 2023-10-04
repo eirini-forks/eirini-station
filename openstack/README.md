@@ -9,12 +9,11 @@ CLI](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-c
 The scripts needs:
   -  the [`openstack` CLI](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html)
   - Openstack RC File sourced
-  - an SSH Key uploaded into your Openstack profile
+  - an SSH Key uploaded into your Openstack profile. Your key name should be the same as your I/D user name.
   - These additional environment variables set:
     - `EIRINI_STATION_USERNAME`: the username associated to your VM
-    - `EIRINI_STATION_FLOATING_NETWORK`: The FloatingIP Network you retreived earlier
+    - `STATION_NETWORK_NAME`: The FloatingIP Network you retreived earlier
     - `VMUSER`: The name of the user that will exist on the VM
-    - `KEYNAME`: The name of your ssh-key in openstack
 
 ## Usage
 
