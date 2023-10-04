@@ -44,6 +44,7 @@ main() {
   install_pure_zsh_theme
   install_tmux_plugin_manager
   install_zsh_autosuggestions
+  install_openstack_clients
   switch_to_zsh
 }
 
@@ -165,7 +166,7 @@ git_clone() {
 configure_dotfiles() {
   echo ">>> Installing eirini-home"
   # backing up any previous existing ssh-key
-  if [ -f $HOME/.ssh/authorized_keys ]; then 
+  if [ -f $HOME/.ssh/authorized_keys ]; then
     KEYS="$(cat $HOME/.ssh/authorized_keys)"
   fi
 
@@ -189,7 +190,7 @@ configure_dotfiles() {
   popd
   # restoring previously backed up ssh-keys
   if [ "$KEYS" ]; then
-    echo "$KEYS" >> $HOME/.ssh/authorized_keys
+    echo "$KEYS" >>$HOME/.ssh/authorized_keys
   fi
 }
 
@@ -230,6 +231,12 @@ install_pure_zsh_theme() {
     git pull -r
   }
   popd
+}
+
+install_openstack_clients() {
+  echo ">>> Installing openstack clients"
+  pip3 install python-openstackclient
+  pip3 install python-barbicanclient
 }
 
 switch_to_zsh() {
