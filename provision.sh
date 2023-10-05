@@ -186,6 +186,7 @@ install_golang() {
   rm -rf /usr/local/go
   add-apt-repository -y ppa:longsleep/golang-backports
   apt-get -y install golang-1.20-go
+  ln -s /usr/lib/go-1.20/bin/* /usr/local/bin
 }
 
 install_nodejs() {
