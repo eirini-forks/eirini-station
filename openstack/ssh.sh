@@ -9,10 +9,11 @@ if [[ "$STATION_STATUS" != "ACTIVE" ]]; then
   exit 1
 fi
 
+ZSH_CUSTOM_DIR="/home/$VMUSER/.oh-my-zsh/custom"
 for attempt in $(seq 10); do
   if ! ssh \
     -A "$VMUSER@$STATION_IP" \
-    "echo export STATION_IP=$STATION_IP > /home/$VMUSER/.oh-my-zsh/custom/station_ip.zsh"; then
+    "mkdir -p $ZSH_CUSTOM_DIR; echo export STATION_IP=$STATION_IP > $ZSH_CUSTOM_DIR/station_ip.zsh"; then
     sleep 1
     continue
   fi
