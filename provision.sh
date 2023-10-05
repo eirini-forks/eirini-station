@@ -46,7 +46,6 @@ main() {
   install_neovim
   install_nodejs
   install_language_servers
-  install_gcloud_cli
   install_golang
   install_cf_tools
   install_github_cli
@@ -197,12 +196,6 @@ install_nodejs() {
   chmod 644 /etc/apt/trusted.gpg.d/nodesource.gpg
   apt-get update
   apt-get -y install nodejs
-}
-
-install_gcloud_cli() {
-  echo ">>> Installing the Google Cloud CLI"
-  snap remove google-cloud-sdk
-  snap install google-cloud-cli --classic
 }
 
 install_cf_tools() {

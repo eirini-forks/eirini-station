@@ -45,6 +45,7 @@ main() {
   install_tmux_plugin_manager
   install_zsh_autosuggestions
   install_openstack_clients
+  install_gcloud_cli
   switch_to_zsh
 }
 
@@ -237,6 +238,14 @@ install_openstack_clients() {
   echo ">>> Installing openstack clients"
   pip3 install python-openstackclient
   pip3 install python-barbicanclient
+}
+
+install_gcloud_cli() {
+  echo ">>> Installing gcloud cli"
+  rm -rf $HOME/google-cloud-sdk
+  curl https://sdk.cloud.google.com >/tmp/install-gcloud-cli.sh
+  bash /tmp/install-gcloud-cli.sh --disable-prompts
+  $HOME/google-cloud-sdk/bin/gcloud components install --quiet gke-gcloud-auth-plugin
 }
 
 switch_to_zsh() {
