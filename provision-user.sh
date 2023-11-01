@@ -35,7 +35,6 @@ main() {
   install_gotools
   install_docker
   install_ohmyzsh
-  uninstall_vim_plug
   install_nvim_extensions
   install_cred_alert
   configure_dotfiles
@@ -106,11 +105,6 @@ install_tmux_plugin_manager() {
 install_zsh_autosuggestions() {
   echo ">>> Installing zsh-autosuggestions"
   git_clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-}
-
-uninstall_vim_plug() {
-  # remove it now we've switched to lazy plugin manager
-  rm -f "$HOME/.local/share/nvim/site/autoload/plug.vim"
 }
 
 install_nvim_extensions() {
