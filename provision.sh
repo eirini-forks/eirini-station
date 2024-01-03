@@ -183,9 +183,11 @@ install_neovim() {
 install_golang() {
   echo ">>> Installing Golang"
   rm -rf /usr/local/go
-  add-apt-repository -y ppa:longsleep/golang-backports
-  apt-get -y install golang-1.20-go
-  ln -s /usr/lib/go-1.20/bin/* /usr/local/bin
+
+  GO_VERSION=1.21.5
+  wget "https://go.dev/dl/go$GO_VERSION.linux-amd64.tar.gz"
+  tar -C /usr/local -xzf "go$GO_VERSION.linux-amd64.tar.gz"
+  rm "go$GO_VERSION.linux-amd64.tar.gz"
 }
 
 install_nodejs() {
