@@ -237,6 +237,9 @@ install_misc_tools() {
 
   echo ">>> Installing the carvel tools"
   curl -sL https://carvel.dev/install.sh | bash
+
+  echo ">>> Installing buildkit-cli-for-kubectl"
+  curl -sSfL "https://github.com/vmware-archive/buildkit-cli-for-kubectl/releases/download/v0.1.6/linux-v0.1.6.tgz" | tar xvz -C /usr/bin
 }
 
 install_language_servers() {
