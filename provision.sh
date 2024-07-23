@@ -107,7 +107,6 @@ install_packages() {
     exuberant-ctags \
     fd-find \
     fortune \
-    libfuse2 \
     g++ \
     git \
     gnupg-agent \
@@ -119,6 +118,7 @@ install_packages() {
     libdevmapper-dev \
     libevent-dev \
     libffi-dev \
+    libfuse2 \
     libgdbm-dev \
     libgdbm6 \
     libmysqlclient-dev \
@@ -130,6 +130,7 @@ install_packages() {
     libtool \
     libtool-bin \
     libyaml-dev \
+    luarocks \
     net-tools \
     netcat-openbsd \
     ntp \
