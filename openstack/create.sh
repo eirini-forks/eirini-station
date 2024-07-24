@@ -1,15 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
+export OS_COMPUTE_API_VERSION="2.52"
+
 echo Creating server "$EIRINI_STATION_USERNAME-eirini-station"
 openstack server create "$EIRINI_STATION_USERNAME-eirini-station" \
   --flavor "g_c8_m16" \
-  --image "ubuntu-22.04-amd64-vmware" \
+  --image "ubuntu-20.04-amd64-vmware_rescue_uefi" \
   --boot-from-volume "100" \
   --wait \
   --network "korifi-dev_private" \
   --security-group "default" \
-  --key-name "$OS_USERNAME" \
+  --key-name "$USER" \
   --tag "$EIRINI_STATION_USERNAME-eirini-station" >/dev/null
 
 openstack floating ip create "$(openstack network list --format json | jq -r ".[0].Name")" \

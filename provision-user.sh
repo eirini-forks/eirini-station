@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source $SCRIPT_DIR/provision-env.sh
+
 readonly USAGE="Usage: provision.sh [-l | -c <command_name>]"
 
 main() {
