@@ -62,8 +62,8 @@ setup_non_root_npm_install_global() {
 
 install_cred_alert() {
   os_name=$(uname | awk '{print tolower($1)}')
-  curl -o cred-alert-cli \
-    "https://s3.amazonaws.com/cred-alert/cli/current-release/cred-alert-cli_${os_name}"
+  url="$(curl -sSfL https://api.github.com/repos/pivotal-cf/cred-alert/releases/latest | jq -r '.assets[]|select(.name|match("linux")).browser_download_url')"
+  curl -sSfLo cred-alert-cli "$url"
   chmod 755 cred-alert-cli
   mv cred-alert-cli "$HOME/bin/"
 }
