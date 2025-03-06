@@ -7,7 +7,7 @@ echo Creating server "$EIRINI_STATION_USERNAME-eirini-station"
 openstack server create "$EIRINI_STATION_USERNAME-eirini-station" \
   --flavor "g_c8_m16" \
   --image "ubuntu-20.04-amd64-vmware_rescue_uefi" \
-  --boot-from-volume "100" \
+  --boot-from-volume "200" \
   --wait \
   --network "korifi-dev_private" \
   --security-group "default" \
