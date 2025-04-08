@@ -155,7 +155,6 @@ install_packages() {
     sshfs \
     stow \
     tig \
-    tmux \
     trash-cli \
     unzip \
     wget \
@@ -169,6 +168,10 @@ install_snaps() {
   rm -f /usr/bin/nvim
   snap install lolcat
   snap install shellcheck --edge
+
+  snap install tmux --classic
+  rm -rf /usr/bin/tmux
+  ln -s /snap/tmux/current/usr/local/bin/tmux /usr/bin
 }
 
 install_kubectl() {
