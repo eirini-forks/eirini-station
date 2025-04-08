@@ -179,7 +179,7 @@ install_kubectl() {
 
 install_neovim() {
   echo ">>> Installing Neovim"
-  curl -sSfLo nvim https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+  curl -sSfLo nvim https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
   mv nvim /usr/local/bin/nvim
   chmod a+x /usr/local/bin/nvim
 }
