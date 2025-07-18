@@ -79,13 +79,6 @@ install_docker() {
 }
 
 install_gotools() {
-  echo ">>> Installing golangci-lint"
-  local url
-  url="$(curl -sSfL https://api.github.com/repos/golangci/golangci-lint/releases/latest | jq -r '.assets[]|select(.name|match("linux-amd64.deb")).browser_download_url')"
-  curl -sSfLo golangci-lint.deb "$url"
-  sudo dpkg --install golangci-lint.deb
-  rm -f golangci-lint.deb
-
   echo ">>> Installing gopls"
   go install golang.org/x/tools/gopls@latest
 
