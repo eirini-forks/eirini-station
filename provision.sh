@@ -38,6 +38,7 @@ main() {
   done
   shift $((OPTIND - 1))
   echo ">>> Installing everything..."
+  fix_umask
   add_swap
   add_sshd_config
   setup_locale
@@ -56,6 +57,15 @@ main() {
   install_misc_tools
   install_helm3
   install_hashicorp_tools
+}
+
+fix_umask() {
+  # set umask to default value for ubuntu (it is set to the restrictive 077 value by SAP)
+  # this value will be in effect during installation
+  umask 022
+  # make sure the restrictive umask is deleted from config, so that it is back to default value
+  # on next login
+  sed -i '/^UMASK/d' /etc/login.defs
 }
 
 add_swap() {
