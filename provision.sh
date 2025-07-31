@@ -44,6 +44,7 @@ main() {
   setup_inotify_limit
   install_packages
   install_aws_cli
+  install_snap
   install_snaps
   install_kubectl
   install_neovim
@@ -161,6 +162,10 @@ install_packages() {
     xsel \
     zlib1g-dev \
     zsh
+}
+install_snap() {
+  snap_version="$(apt list --all-versions snapd | tail -n +2 | head -1 | awk '{print $2}')"
+  apt install snapd="$snap_version"
 }
 
 install_snaps() {

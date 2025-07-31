@@ -3,12 +3,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+source "$SCRIPT_DIR/env.sh"
 if [[ -z "${STATION_IP:-}" ]]; then
   source "$SCRIPT_DIR/common.sh"
 fi
 
-common_profile_path=".oh-my-zsh/custom/station.zsh"
-local_station_profile="$HOME/$common_profile_path"
 station_profile_contents=$(
   cat <<-EOF
 export STATION_IP=$STATION_IP
@@ -16,8 +15,10 @@ export VMUSER=$VMUSER
 EOF
 )
 
-mkdir -p "$(dirname "$local_station_profile")"
-echo "$station_profile_contents" >"$local_station_profile"
+COMMON_PROFILE_PATH=".oh-my-zsh/custom/station.zsh"
+LOCAL_STATION_PROFILE="$HOME/$COMMON_PROFILE_PATH"
+mkdir -p "$(dirname "$LOCAL_STATION_PROFILE")"
+echo "$station_profile_contents" >"$LOCAL_STATION_PROFILE"
 
 for attempt in $(seq 10); do
   if
@@ -25,7 +26,7 @@ for attempt in $(seq 10); do
       -A \
       -o "UserKnownHostsFile=/dev/null" \
       -o "StrictHostKeyChecking no" \
-      "$local_station_profile" "${VMUSER}@${STATION_IP}:/home/$VMUSER/$common_profile_path"
+      "$LOCAL_STATION_PROFILE" "${VMUSER}@${STATION_IP}:/home/$VMUSER/$COMMON_PROFILE_PATH"
   then
     sleep 1
     continue

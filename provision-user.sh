@@ -106,8 +106,8 @@ install_zsh_autosuggestions() {
 install_nvim_extensions() {
   echo ">>> Installing the NeoVim extensions"
   npm install -g neovim
-  pip3 install --upgrade pip
-  pip3 install --upgrade neovim
+  sudo apt -y install python3-pip
+  sudo apt -y install python3-neovim
   gem install neovim --user-install
 }
 
@@ -186,9 +186,6 @@ configure_dotfiles() {
 }
 
 install_misc_tools() {
-  echo ">>> Installing Ginkgo"
-  go install github.com/onsi/ginkgo/v2/ginkgo@latest
-
   echo ">>> Installing concourse-flake-hunter"
   go install github.com/eirini-forks/concourse-flake-hunter@latest
 
@@ -226,8 +223,8 @@ install_pure_zsh_theme() {
 
 install_openstack_clients() {
   echo ">>> Installing openstack clients"
-  pip3 install python-openstackclient
-  pip3 install python-barbicanclient
+  sudo apt -y install python3-openstackclient
+  sudo apt -y install python3-barbicanclient
 }
 
 install_gcloud_cli() {

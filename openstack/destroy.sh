@@ -10,8 +10,8 @@ if [[ -f "$STATION_HISTORY_BACKUP" ]]; then
   scp -r "$VMUSER@$STATION_IP:~/.zsh_history" "$STATION_HISTORY_BACKUP" || true
 fi
 
-openstack server delete "$EIRINI_STATION_USERNAME-eirini-station" --wait
-
 openstack floating ip delete "$STATION_IP"
-
+openstack server delete "$EIRINI_STATION_USERNAME-eirini-station" --wait
 openstack volume delete "$STATION_VOLUME"
+
+rm -f "$LOCAL_STATION_PROFILE"
