@@ -165,7 +165,7 @@ install_packages() {
 }
 install_snap() {
   snap_version="$(apt list --all-versions snapd | tail -n +2 | head -1 | awk '{print $2}')"
-  apt install snapd="$snap_version"
+  apt install -y snapd="$snap_version"
 }
 
 install_snaps() {
