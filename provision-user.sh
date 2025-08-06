@@ -48,6 +48,7 @@ main() {
   install_zsh_autosuggestions
   install_openstack_clients
   install_gcloud_cli
+  install_browsh
   switch_to_zsh
 }
 
@@ -233,6 +234,12 @@ install_gcloud_cli() {
   curl https://sdk.cloud.google.com >/tmp/install-gcloud-cli.sh
   bash /tmp/install-gcloud-cli.sh --disable-prompts
   $HOME/google-cloud-sdk/bin/gcloud components install --quiet gke-gcloud-auth-plugin
+}
+
+install_browsh() {
+  echo ">>> Installing browsh"
+  curl -LsSf https://github.com/browsh-org/browsh/releases/download/v1.8.2/browsh_1.8.2_linux_amd64 -o "$HOME/bin/browsh"
+  chmod +x "$HOME/bin/browsh"
 }
 
 switch_to_zsh() {

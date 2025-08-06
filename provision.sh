@@ -57,6 +57,7 @@ main() {
   install_misc_tools
   install_helm3
   install_hashicorp_tools
+  install_firefox
 }
 
 fix_umask() {
@@ -287,6 +288,28 @@ install_helm3() {
   chmod 644 /etc/apt/trusted.gpg.d/helm.gpg
   apt-get update
   apt-get install -y helm
+}
+
+install_firefox() {
+  # needed by browsh (installed in provision-user.sh)
+  #
+  # install firefox from deb
+  # (headless snap version cannot access x server)
+  add-apt-repository -y ppa:mozillateam/ppa
+
+  cat <<EOF >/etc/apt/preferences.d/mozilla-firefox
+Package: *
+Pin: release o=LP-PPA-mozillateam
+Pin-Priority: 1001
+
+Package: firefox
+Pin: version 1:1snap*
+Pin-Priority: -1
+EOF
+
+  snap remove firefox
+
+  apt install -y --allow-downgrades firefox
 }
 
 main "$@"
