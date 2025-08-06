@@ -49,6 +49,7 @@ main() {
   install_openstack_clients
   install_gcloud_cli
   install_browsh
+  install_kubelogin
   switch_to_zsh
 }
 
@@ -240,6 +241,18 @@ install_browsh() {
   echo ">>> Installing browsh"
   curl -LsSf https://github.com/browsh-org/browsh/releases/download/v1.8.2/browsh_1.8.2_linux_amd64 -o "$HOME/bin/browsh"
   chmod +x "$HOME/bin/browsh"
+}
+
+install_kubelogin() {
+  tmpdir="$(mktemp -d)"
+  curl -LsSf https://github.com/int128/kubelogin/releases/download/v1.34.0/kubelogin_linux_amd64.zip -o "$tmpdir/kubelogin.zip"
+  pushd "$tmpdir"
+  {
+    unzip kubelogin.zip
+    mv kubelogin "$HOME/bin/kubectl-oidc_login"
+  }
+  popd
+  rm -rf "$tmpdir"
 }
 
 switch_to_zsh() {
