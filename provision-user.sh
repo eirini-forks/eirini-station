@@ -35,6 +35,7 @@ main() {
   echo ">>> Installing everything..."
   mkdir_home_user_bin
   setup_non_root_npm_install_global
+  create_python_venv
   install_gotools
   install_docker
   install_ohmyzsh
@@ -111,6 +112,7 @@ install_nvim_extensions() {
   sudo apt -y install python3-pip
   sudo apt -y install python3-neovim
   gem install neovim --user-install
+  python3 -m pip install --upgrade pynvim
 }
 
 clone_git_repos() {
@@ -253,6 +255,11 @@ install_kubelogin() {
   }
   popd
   rm -rf "$tmpdir"
+}
+
+create_python_venv() {
+  python3 -m venv $HOME/python-venv
+  source $HOME/python-venv/bin/activate
 }
 
 switch_to_zsh() {
