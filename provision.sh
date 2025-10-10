@@ -207,7 +207,7 @@ install_golang() {
   echo ">>> Installing Golang"
   rm -rf /usr/local/go
 
-  GO_VERSION=1.24.1
+  GO_VERSION=1.25.2
   wget "https://go.dev/dl/go$GO_VERSION.linux-amd64.tar.gz"
   tar -C /usr/local -xzf "go$GO_VERSION.linux-amd64.tar.gz"
   rm "go$GO_VERSION.linux-amd64.tar.gz"
