@@ -282,10 +282,8 @@ install_github_cli() {
 
 install_helm3() {
   echo ">>> Installing Helm 3"
-  curl https://baltocdn.com/helm/signing.asc | gpg --dearmor --batch --yes -o /etc/apt/trusted.gpg.d/helm.gpg
-  apt-get install apt-transport-https --yes
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list
-  chmod 644 /etc/apt/trusted.gpg.d/helm.gpg
+  echo "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main" >/etc/apt/sources.list.d/helm-stable-debian.list
+  curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor >/usr/share/keyrings/helm.gpg
   apt-get update
   apt-get install -y helm
 }
